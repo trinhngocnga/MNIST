@@ -1,73 +1,200 @@
-# Bài tập lớn: Nhận Diện Chữ Số Viết Tay MNIST bằng Mạng Nơ-ron Đa lớp (MLP)
+Bài tập lớn: Nhận diện chữ số viết tay MNIST bằng MLP
 
-> **Đề tài số 6 | Môn Nhập môn Trí Tuệ Nhân Tạo**  
-> **Đại học Phenikaa — Trường Công nghệ Thông tin Phenikaa**
----
-## Giới Thiệu
-Dự án ứng dụng kiến trúc **Mạng Nơ-ron Đa lớp (Multi-Layer Perceptron - MLP)** để giải quyết bài toán phân loại chữ số viết tay (từ 0 đến 9) dựa trên tập dữ liệu chuẩn MNIST (60.000 ảnh huấn luyện và 10.000 ảnh kiểm thử).
+Đề tài số 6 – Môn Nhập môn Trí tuệ nhân tạo
+Trường Công nghệ Thông tin – Đại học Phenikaa
 
-Sản phẩm hoàn chỉnh bao gồm:
-1. **Chương trình huấn luyện & Đánh giá:** Xây dựng, so sánh các cấu hình kiến trúc MLP khác nhau, xuất đồ thị Loss/Accuracy, Ma trận nhầm lẫn (Confusion Matrix) và phân tích ảnh phân loại sai.
-2. **Ứng dụng Web trực quan (Flask App):** Cho phép người dùng tự vẽ chữ số bằng chuột trên giao diện Canvas, hệ thống tự động tiền xử lý nét vẽ và đưa qua mô hình MLP để nhận diện theo thời gian thực.
----
-## Nhóm Thực Hiện (Nhóm 06)
-* **Trịnh Ngọc Nga** - MSV: 24100065
-* **Bùi Khánh Linh** - MSV: 24100543
+Giới thiệu
 
-**Giảng viên hướng dẫn:** ThS. Phan Thị Hoài  
-**Lớp tín chỉ:** CSE703041-2-3-25 (N02)
+Đề tài xây dựng hệ thống nhận diện chữ số viết tay (0–9) sử dụng tập dữ liệu MNIST.
 
----
+Mô hình chính của đề tài là Multi-Layer Perceptron (MLP). Ngoài ra, hai mô hình Convolutional Neural Network (CNN) và Random Forest (RF) được sử dụng làm mô hình so sánh nhằm đánh giá hiệu quả của MLP.
 
-## Cấu Trúc Thư Mục
-```text
-mnist/
+Hệ thống gồm hai phần:
+
+Huấn luyện và đánh giá các mô hình
+Ứng dụng Web Flask cho phép người dùng vẽ chữ số và dự đoán trực tiếp.
+Thành viên nhóm
+
+Nhóm 06
+
+Trịnh Ngọc Nga – 24100065
+Bùi Khánh Linh – 24100543
+
+Giảng viên hướng dẫn
+
+ThS. Phan Thị Hoài
+
+Cấu trúc thư mục
+MNIST_PROJ/
 │
-├── train_model.py        # Script tải dữ liệu, huấn luyện/so sánh các kiến trúc MLP & vẽ biểu đồ
-├── app.py                # Máy chủ Web Flask — xử lý ảnh vẽ từ Canvas và nhận diện
+├── app.py                 # Flask Web App dự đoán chữ số
+├── train_model.py         # Huấn luyện các mô hình và lưu model
 │
-├── mnist_mlp.keras       # Mô hình MLP tối ưu đã được huấn luyện sẵn (Test Accuracy > 95%)
+├── train.csv.zip          # Bộ dữ liệu MNIST (Kaggle)
 │
-├── templates/
-│   └── index.html        # Giao diện Web vẽ chữ số (HTML5 Canvas + Chart.js)
+├── mnist_mlp.keras        # Mô hình MLP đã huấn luyện
+├── mnist_cnn.keras        # Mô hình CNN đã huấn luyện
+├── mnist_rf.joblib        # Mô hình Random Forest đã huấn luyện
 │
-├── debug_input.png       # Ảnh debug 28x28 hiển thị nét vẽ thực tế sau khi AI căn giữa
-└── requirements.txt      # Danh sách các thư viện Python cần thiết
+└── templates/
+    └── index.html         # Giao diện Web
+Các mô hình sử dụng
+1. Multi-Layer Perceptron (MLP)
 
-Kiến Trúc Các Mô Hình MLP
-Để tìm ra cấu hình tối ưu theo yêu cầu mở rộng của đề tài, nhóm đã thử nghiệm và so sánh 3 kiến trúc MLP với số lượng lớp ẩn và số nơ-ron khác nhau:
-Mô hình 1 (Shallow Network): Input (784) → Dense 128 (ReLU) → Output 10 (Softmax)
-Mô hình 2 (Deep Network): Input (784) → Dense 256 (ReLU) → Dense 128 (ReLU) → Output 10 (Softmax)
-Mô hình 3 (Deep + Regularization): Input (784) → Dense 256 (ReLU) → Dense 128 (ReLU) → Dense 64 (ReLU) → Dropout (0.2) → Output 10 (Softmax)
+Là mô hình chính của đề tài.
 
-Thiết lập huấn luyện chung:
-Hàm mất mát (Loss function): Categorical Cross-Entropy
-Thuật toán tối ưu (Optimizer): Adam
-Đánh giá (Metric): Accuracy
+Kiến trúc:
 
-Hướng Dẫn Cài Đặt và Sử Dụng
-1. Cài đặt môi trường
-Yêu cầu máy tính cài sẵn Python 3.8 trở lên. Mở Terminal / Command Prompt tại thư mục dự án và chạy:
-``Bash
-pip install -r requirements.txt
-(Nếu chưa có file requirements.txt, chạy lệnh: pip install tensorflow flask numpy pillow matplotlib scikit-learn)
+Input (784)
 
-2. Khởi động Giao diện Web nhận diện
-Mở Terminal và chạy lệnh:
-``Bash
-python app.py
-Trình duyệt sẽ hiển thị thông báo server khởi chạy tại: http://127.0.0.1:5000
-Truy cập đường dẫn trên, dùng chuột vẽ một số (0-9) lên bảng đen và chọn Dự đoán.
+↓
 
-3. Huấn luyện lại mô hình & Xuất biểu đồ báo cáo (Tùy chọn)
-Nếu muốn chạy lại quá trình huấn luyện 3 kiến trúc MLP từ đầu để lấy số liệu cho bài báo cáo:
-``Bash
+Dense(256, ReLU)
+
+↓
+
+Dense(128, ReLU)
+
+↓
+
+Dropout(0.2)
+
+↓
+
+Dense(64, ReLU)
+
+↓
+
+Output(10, Softmax)
+2. Convolutional Neural Network (CNN)
+
+Được sử dụng làm mô hình so sánh.
+
+Kiến trúc gồm:
+
+Convolution
+MaxPooling
+Flatten
+Dense
+Softmax
+3. Random Forest
+
+Sử dụng thuật toán Random Forest của Scikit-learn làm mô hình Machine Learning truyền thống để so sánh với Deep Learning.
+
+Thiết lập huấn luyện
+
+Các tham số chính:
+
+Optimizer: Adam
+Loss Function: Categorical Crossentropy (MLP, CNN)
+Metric: Accuracy
+Epoch: (theo train_model.py)
+Batch Size: (theo train_model.py)
+Hướng dẫn cài đặt
+
+Yêu cầu:
+
+Python 3.9 trở lên
+
+Cài đặt các thư viện:
+
+pip install tensorflow
+pip install flask
+pip install numpy
+pip install pandas
+pip install pillow
+pip install matplotlib
+pip install seaborn
+pip install scikit-learn
+pip install joblib
+
+Hoặc
+
+pip install tensorflow flask numpy pandas pillow matplotlib seaborn scikit-learn joblib
+Hướng dẫn chạy chương trình
+Bước 1. Giải nén dữ liệu
+
+Giải nén file
+
+train.csv.zip
+
+thu được
+
+train.csv
+
+đặt cùng thư mục với
+
+train_model.py
+Bước 2. Huấn luyện mô hình
+
+Nếu muốn huấn luyện lại từ đầu:
+
 python train_model.py
-Script sẽ tự động tải tập dữ liệu MNIST từ Keras, huấn luyện mô hình, lưu file mnist_mlp.keras, đồng thời hiển thị/lưu các biểu đồ Loss/Accuracy và Confusion Matrix.
 
-Quy Trình Tiền Xử Lý Ảnh Trong app.py
-Để khắc phục hiện tượng lệch phân phối dữ liệu khi vẽ bằng chuột, ứng dụng áp dụng thuật toán 4 bước chuẩn hóa:
-1.Đọc ảnh: Chuyển đổi dữ liệu chuỗi Base64 từ Canvas web thành ảnh xám (Grayscale).
-2.Cắt vùng chứa nét vẽ (Bounding Box): Tìm tọa độ các pixel có độ sáng > 30 để cắt bỏ hoàn toàn vùng viền đen thừa.
-3.Căn giữa chuẩn MNIST: Thu phóng nét vẽ giữ nguyên tỉ lệ (Aspect Ratio) vào khung 20x20, sau đó đặt chính giữa bức nền đen 28x28.
-4.Dự đoán: Chuẩn hóa giá trị pixel về khoảng [0, 1], duỗi thành vector 784 chiều và đưa qua mô hình MLP.
+Sau khi hoàn thành sẽ sinh ra các file:
+
+mnist_mlp.keras
+
+mnist_cnn.keras
+
+mnist_rf.joblib
+
+Đồng thời chương trình sẽ hiển thị các kết quả đánh giá như:
+
+Accuracy
+Loss
+Confusion Matrix
+Classification Report
+So sánh các mô hình
+Bước 3. Chạy ứng dụng Web
+
+Thực hiện:
+
+python app.py
+
+Nếu thành công sẽ xuất hiện:
+
+Running on http://127.0.0.1:5000
+
+Mở trình duyệt và truy cập:
+
+http://127.0.0.1:5000
+Hướng dẫn sử dụng
+Mở giao diện Web.
+Dùng chuột vẽ một chữ số từ 0–9.
+Nhấn nút Predict.
+Hệ thống sẽ:
+Tiền xử lý ảnh.
+Chuẩn hóa về kích thước 28×28.
+Đưa ảnh vào mô hình MLP.
+Hiển thị kết quả dự đoán.
+Quy trình xử lý ảnh
+
+Ảnh vẽ trên Canvas được xử lý theo các bước:
+
+Nhận ảnh từ HTML Canvas dưới dạng Base64.
+Chuyển sang ảnh Grayscale.
+Đảo màu để phù hợp với MNIST.
+Cắt vùng chứa chữ số (Bounding Box).
+Resize về 20×20.
+Đặt vào khung ảnh 28×28.
+Chuẩn hóa giá trị pixel về khoảng [0,1].
+Chuyển thành vector đầu vào của mô hình.
+Dự đoán bằng mô hình MLP.
+Kết quả
+
+Đề tài so sánh ba mô hình:
+
+Multi-Layer Perceptron (MLP)
+Convolutional Neural Network (CNN)
+Random Forest (RF)
+
+Các tiêu chí đánh giá:
+
+Accuracy
+Precision
+Recall
+F1-score
+Confusion Matrix
+
+Qua kết quả thực nghiệm, MLP được lựa chọn là mô hình chính cho ứng dụng Web, trong khi CNN và Random Forest đóng vai trò mô hình đối chứng để đánh giá hiệu quả của phương pháp đề xuất.
